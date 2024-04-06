@@ -1,6 +1,6 @@
 # Cosmo
 
-Cosmo is a C# .NET 8.0 terminal rendering library designed with efficiency and speed in mind.
+Cosmo is a C# .NET 8.0 terminal rendering library designed with efficiency and speed in mind.<br>
 Whether your application calls for fast graphics or simple UI, Cosmo should have you covered.
 
 ### Cosmo supports...
