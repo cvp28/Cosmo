@@ -19,9 +19,9 @@ public unsafe partial class Renderer
 	{
 		Width = Console.WindowWidth;
 		Height = Console.WindowHeight;
-		
+
 		PrecacheSequences();
-		
+
 		#region Platform-specific Writing Delegates
 		if (OperatingSystem.IsWindows())
 		{

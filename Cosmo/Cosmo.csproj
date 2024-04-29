@@ -3,7 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
+	<Version>1.0.1</Version>
+
+	<RepositoryUrl>https://www.github.com/cvp28/Cosmo</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

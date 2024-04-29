@@ -30,7 +30,13 @@ public unsafe partial class Renderer
 		var drawEnumerator = FrontBuffer.ToDraw.Values.GetEnumerator();
 
 		while (clearEnumerator.MoveNext())
-			RenderClearPixel(clearEnumerator.Current, ref writer);
+		{
+			var NewPixel = new Pixel(clearEnumerator.Current, ' ', DefaultForeground, DefaultBackground, 0);
+			RenderPixel(in NewPixel, ref writer);
+		}
+
+		//	while (clearEnumerator.MoveNext())
+		//		RenderClearPixel(clearEnumerator.Current, ref writer);
 
 		while (drawEnumerator.MoveNext())
 		{
@@ -60,7 +66,11 @@ public unsafe partial class Renderer
 		var drawEnumerator = FrontBuffer.ToDraw.Values.GetEnumerator();
 
 		while (clearEnumerator.MoveNext())
-			RenderClearPixel(clearEnumerator.Current, ref writer);
+		{
+			var NewPixel = new Pixel(clearEnumerator.Current, ' ', DefaultForeground, DefaultBackground, 0);
+			RenderPixel(in NewPixel, ref writer);
+		}
+			//RenderClearPixel(clearEnumerator.Current, ref writer);
 
 		while (drawEnumerator.MoveNext())
 		{
