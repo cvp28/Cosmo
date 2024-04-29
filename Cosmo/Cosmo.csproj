@@ -4,9 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-	<Version>1.0.1</Version>
-
+	
+	<Version>1.0.2</Version>
+	<Description>A C# terminal rendering library built with efficiency and speed in mind.</Description>
 	<RepositoryUrl>https://www.github.com/cvp28/Cosmo</RepositoryUrl>
+	
+	<PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,4 +20,8 @@
   <PropertyGroup>
   	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  
+  <ItemGroup>
+	<None Include="icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>

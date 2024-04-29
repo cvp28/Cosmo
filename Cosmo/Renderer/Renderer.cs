@@ -110,7 +110,11 @@ public unsafe partial class Renderer
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private int ScreenIX(int X, int Y) => Y % Height * Width + (X % Width);
-
+	
+	/// <summary>
+	/// CURRENTLY INOPERATIVE. Would normally flush the render buffers to disk for debugging purposes. This will be implemented in a future release.
+	/// </summary>
+	/// <param name="Quantity">Number of frames to begin flushing</param>
 	public void DoBufferDump(int Quantity)
 	{
 		BufferDumpQuantity = Quantity;
