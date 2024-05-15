@@ -1,7 +1,7 @@
 ﻿
 namespace Cosmo;
 
-internal readonly struct Pixel : IEqualityComparer<Pixel>, IComparable<Pixel>
+public readonly struct Pixel : IEqualityComparer<Pixel>, IComparable<Pixel>
 {
 	public int Index { get; init; }
 	
