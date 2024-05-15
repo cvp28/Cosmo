@@ -1,4 +1,6 @@
 ﻿
+using Collections.Pooled;
+
 namespace Cosmo;
 
 public partial class Renderer
@@ -82,6 +84,32 @@ public partial class Renderer
 			{
 				err += x_diff;
 				y1 += y_direction;
+			}
+		}
+	}
+
+	private char[] RenderBlacklist = [ '\n', '\r', '\t' ];
+
+	public void DrawPixelBuffer(int X, int Y, int ViewWidth, int ViewHeight, int BufferWidth, in Span<Pixel> Buffer)
+	{
+		int OffX = 0;
+		int OffY = 0;
+
+		for (int i = 0; i < ViewWidth * ViewHeight; i++)
+		{
+			var CurrentPixel = Buffer[OffX + BufferWidth * OffY];
+
+			if (!RenderBlacklist.Contains(CurrentPixel.Character))
+				TryModifyPixel(ScreenIX(OffX, OffY), CurrentPixel.Character, CurrentPixel.Foreground, CurrentPixel.Background, CurrentPixel.Style);
+
+			if (OffX == ViewWidth - 1)
+			{
+				OffX = 0;
+				OffY++;
+			}
+			else
+			{
+				OffX++;
 			}
 		}
 	}
