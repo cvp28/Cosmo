@@ -90,27 +90,18 @@ public partial class Renderer
 
 	private char[] RenderBlacklist = [ '\n', '\r', '\t' ];
 
-	public void DrawPixelBuffer(int X, int Y, int ViewWidth, int ViewHeight, int BufferWidth, in Span<Pixel> Buffer)
+	public void DrawPixelBuffer2D(int X, int Y, int BufferWidth, int BufferHeight, in Span<Pixel> Buffer)
 	{
-		int OffX = 0;
-		int OffY = 0;
+		int StartIndex = ScreenIX(X, Y);
 
-		for (int i = 0; i < ViewWidth * ViewHeight; i++)
+		for (int i = 0; i < Buffer.Length; i++)
 		{
-			var CurrentPixel = Buffer[OffX + BufferWidth * OffY];
+			var CurrentPixel = Buffer[i];
+
+			(int OffY, int OffX) Coords = Math.DivRem(i, BufferWidth);
 
 			if (!RenderBlacklist.Contains(CurrentPixel.Character))
-				TryModifyPixel(ScreenIX(OffX, OffY), CurrentPixel.Character, CurrentPixel.Foreground, CurrentPixel.Background, CurrentPixel.Style);
-
-			if (OffX == ViewWidth - 1)
-			{
-				OffX = 0;
-				OffY++;
-			}
-			else
-			{
-				OffX++;
-			}
+				TryModifyPixel(StartIndex + ScreenIX(Coords.OffX, Coords.OffY), CurrentPixel.Character, CurrentPixel.Foreground, CurrentPixel.Background, CurrentPixel.Style);
 		}
 	}
 
