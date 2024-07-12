@@ -1,5 +1,5 @@
-﻿
-using System.Buffers;
+﻿using System.Buffers;
+using System.Diagnostics;
 
 using Utf8StringInterpolation;
 
@@ -15,9 +15,17 @@ public unsafe partial class Renderer
 	private RenderBuffer BackBuffer => RenderBuffers.BackBuffer;
 	private RenderBuffer FrontBuffer => RenderBuffers.FrontBuffer;
 
-	private void RenderThreadProc()
+    /// <summary>
+    /// Limits the render thread to run at the specified number of iterations per second
+    /// </summary>
+    public int RenderThreadLimiter = 0;
+    private SleepState RenderThreadSleepState;
+
+    private void RenderThreadProc()
 	{
 	loop_start:
+		var RenderThreadStartTicks = Stopwatch.GetTimestamp();
+
 		RenderThreadMTWait = ExecuteTimed(delegate
 		{
 			while (!DoRender) Thread.Yield();
@@ -57,6 +65,14 @@ public unsafe partial class Renderer
 		DoWrite = true;
 
 		DoRender = false;
+
+		var RenderThreadElapsed = Stopwatch.GetElapsedTime(RenderThreadStartTicks);
+
+        if (FrameRateLimiterEnabled)
+            Thread.Sleep(10);
+
+		//Sleep(TimeSpan.FromSeconds(1.0 / RenderThreadLimiter) - RenderThreadElapsed, ref RenderThreadSleepState);
+
 		goto loop_start;
 	}
 

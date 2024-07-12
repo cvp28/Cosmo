@@ -13,4 +13,10 @@ public unsafe partial class Renderer
 
 	[DllImport("kernel32.dll", EntryPoint = "WriteFile")]
 	internal static extern bool k32WriteFile(nint fFile, byte* lpBuffer, uint nNumberOfBytesToWrite, out uint lpNumberOfBytesWritten, nint lpOverlapped);
+
+    [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
+    internal static extern void winmmTimeBeginPeriod(int Period);
+
+    [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
+    internal static extern void winmmTimeEndPeriod(int Period);
 }

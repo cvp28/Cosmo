@@ -109,7 +109,7 @@ public partial class Renderer
 	private void TryModifyPixel(int Index, char Character, Color24 Foreground, Color24 Background, byte StyleMask)
 	{
 		// If this space is not actually going to be visible, cull it
-		if (Character == ' ' && Background == DefaultBackground)
+		if (char.IsWhiteSpace(Character) && Background == DefaultBackground && StyleMask == 0)
 			return;
 		
 		var NewPixel = new Pixel(Index, Character, Foreground, Background, StyleMask);

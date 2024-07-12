@@ -14,11 +14,19 @@ public unsafe partial class Renderer
 	private int TotalCellCount => Width * Height;
 	
 	public int BufferDumpQuantity = 0;
-	
+
+	public bool FrameRateLimiterEnabled { get; set; } = false;
+
 	public Renderer()
 	{
 		Width = Console.WindowWidth;
 		Height = Console.WindowHeight;
+
+		RenderThreadSleepState = new();
+		WriteThreadSleepState = new();
+
+		RenderThreadLimiter = 0;
+		WriteThreadLimiter = 0;
 
 		PrecacheSequences();
 
@@ -136,6 +144,78 @@ public unsafe partial class Renderer
 		ActionToMeasure();
 		return Stopwatch.GetElapsedTime(start);
 	}
+
+    private static Action PlatformEnableHighResolutionTiming = OperatingSystem.IsWindows() ?
+        delegate    // Windows Impl
+        {
+            winmmTimeBeginPeriod(1);
+        }
+		:
+        delegate    // Unix Impl
+        {
+            // empty for now :P
+        };
+
+    private static Action PlatformDisableHighResolutionTiming = OperatingSystem.IsWindows() ?
+        delegate    // Windows Impl
+        {
+            winmmTimeEndPeriod(1);
+        }
+		:
+        delegate    // Unix Impl
+        {
+            // empty for now :P
+        };
+
+    private void Sleep(TimeSpan Time, ref SleepState s)
+    {
+        double RemainingSeconds = Time.TotalSeconds;
+        TimeSpan observed;
+        int powersaving_count = 0;
+
+        // Power saving section
+        var powersaving_time_start = Stopwatch.GetTimestamp();
+        PlatformEnableHighResolutionTiming();
+
+        do
+        {
+            var start = Stopwatch.GetTimestamp();
+            Thread.Yield();
+            observed = Stopwatch.GetElapsedTime(start);
+
+            RemainingSeconds -= observed.TotalSeconds;
+
+            s.estimate = UpdateEstimate(observed, ref s);
+
+            powersaving_count++;
+        }
+        while (RemainingSeconds > s.estimate);
+
+        PlatformDisableHighResolutionTiming();
+        var powersaving_time = Stopwatch.GetElapsedTime(powersaving_time_start);
+
+        // Spin lock section
+        var spinlock_time_start = Stopwatch.GetTimestamp();
+
+        int spinlock_count = 0;
+        var spin_lock_start = Stopwatch.GetTimestamp();
+        while (Stopwatch.GetElapsedTime(spin_lock_start).TotalSeconds < RemainingSeconds) spinlock_count++;
+
+        var spinlock_time = Stopwatch.GetElapsedTime(spinlock_time_start);
+
+        var total_sleep_time = powersaving_time.TotalSeconds + spinlock_time.TotalSeconds;
+    }
+
+    // local helper function (thank you https://blog.bearcats.nl/accurate-sleep-function/)
+    private double UpdateEstimate(TimeSpan observed, ref SleepState s)
+    {
+        double delta = observed.TotalSeconds - s.mean;
+        s.count++;
+        s.mean += delta / s.count;
+        s.m2 += delta * (observed.TotalSeconds - s.mean);
+        double stddev = Math.Sqrt(s.m2 / (s.count - 1));
+        return s.mean + stddev;
+    }
 	
 	public void Flush()
 	{
@@ -285,6 +365,22 @@ public unsafe partial class Renderer
 
 		return temp;
 	}
+}
+
+struct SleepState
+{
+    public double estimate = 0.0015;
+
+    public double mean = 0.0015;
+
+    public double m2 = 0;
+
+    public long count = 1;
+
+    public SleepState()
+    { }
+
+    public static SleepState Default = new();
 }
 
 public static class StyleHelper
