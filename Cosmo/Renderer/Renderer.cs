@@ -78,6 +78,8 @@ public unsafe partial class Renderer
 	
 	private void InitScreen()
 	{
+		Console.Clear();
+
 		// Set up the screen state (set screen to full white on black and reset cursor to home)
 		Console.Write($"\u001b[0m\u001b[38;2;255;255;255m\u001b[48;2;0;0;0m{new string(' ', TotalCellCount)}\u001b[;H");
 		
