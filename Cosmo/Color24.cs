@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Text.Json.Serialization;
 
 using Utf8StringInterpolation;
 
@@ -7,15 +8,18 @@ namespace Cosmo;
 public readonly struct Color24
 {
 	public byte Red { get; init; }
-	public byte Green { get; init; }
-	public byte Blue { get; init; }
 
-	public Color24(byte r, byte g, byte b)
+    public byte Green { get; init; }
+
+    public byte Blue { get; init; }
+
+	[JsonConstructor]
+	public Color24(byte Red, byte Green, byte Blue)
 	{
-		Red = r;
-		Green = g;
-		Blue = b;
-		_hash = HashCode.Combine(Red, Green, Blue);
+		this.Red = Red;
+		this.Green = Green;
+		this.Blue = Blue;
+        _hash = HashCode.Combine(this.Red, this.Green, this.Blue);
 	}
 	
 	public void AsForegroundVT(ref Utf8StringWriter<ArrayBufferWriter<byte>> sb)
