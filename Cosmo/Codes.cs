@@ -1,7 +1,7 @@
 ﻿
 namespace Cosmo;
 
-public enum StyleCode : byte
+public enum Style : byte
 {
 	None		= 0,
 	Bold		= 1,
@@ -15,45 +15,45 @@ public enum StyleCode : byte
 
 public static class CodeHelper
 {
-	public static byte GetMask(this StyleCode Style) => Style switch
+	public static byte GetMask(this Style Style) => Style switch
 	{
-		StyleCode.Bold			=> 0b00000001,
-		StyleCode.Dim			=> 0b00000010,
-		StyleCode.Italic		=> 0b00000100,
-		StyleCode.Underlined	=> 0b00001000,
-		StyleCode.Blink			=> 0b00010000,
-		StyleCode.Inverted		=> 0b00100000,
-		StyleCode.CrossedOut	=> 0b01000000,
+		Style.Bold			=> 0b00000001,
+		Style.Dim			=> 0b00000010,
+		Style.Italic		=> 0b00000100,
+		Style.Underlined	=> 0b00001000,
+		Style.Blink			=> 0b00010000,
+		Style.Inverted		=> 0b00100000,
+		Style.CrossedOut	=> 0b01000000,
 
-		StyleCode.None			=> 0b00000000,
+		Style.None			=> 0b00000000,
 		_						=> 0b00000000
 	};
 	
-	public static byte GetCode(this StyleCode Style) => Style switch
+	public static byte GetCode(this Style Style) => Style switch
 	{
-		StyleCode.Bold			=> 1,
-		StyleCode.Dim			=> 2,
-		StyleCode.Italic		=> 3,
-		StyleCode.Underlined	=> 4,
-		StyleCode.Blink			=> 5,
-		StyleCode.Inverted		=> 7,
-		StyleCode.CrossedOut	=> 9,
+		Style.Bold			=> 1,
+		Style.Dim			=> 2,
+		Style.Italic		=> 3,
+		Style.Underlined	=> 4,
+		Style.Blink			=> 5,
+		Style.Inverted		=> 7,
+		Style.CrossedOut	=> 9,
 
-		StyleCode.None			=> 0,
+		Style.None			=> 0,
 		_						=> 0
 	};
 	
-	public static byte GetResetCode(this StyleCode Style) => Style switch
+	public static byte GetResetCode(this Style Style) => Style switch
 	{
-		StyleCode.Bold			=> 22,
-		StyleCode.Dim			=> 22,
-		StyleCode.Italic		=> 23,
-		StyleCode.Underlined	=> 24,
-		StyleCode.Blink			=> 25,
-		StyleCode.Inverted		=> 27,
-		StyleCode.CrossedOut	=> 29,
+		Style.Bold			=> 22,
+		Style.Dim			=> 22,
+		Style.Italic		=> 23,
+		Style.Underlined	=> 24,
+		Style.Blink			=> 25,
+		Style.Inverted		=> 27,
+		Style.CrossedOut	=> 29,
 
-		StyleCode.None			=> 0,
+		Style.None			=> 0,
 		_						=> 0
 	};
 }

@@ -286,7 +286,7 @@ public unsafe partial class Renderer
 	{
 		writer.Append("\u001b[");
 
-		Span<StyleCode> Codes = stackalloc StyleCode[8];
+		Span<Style> Codes = stackalloc Style[8];
 
 		StyleHelper.UnpackStyle(ResetMask, ref Codes, out int Count);
 
@@ -307,7 +307,7 @@ public unsafe partial class Renderer
 	{
 		writer.Append("\u001b[");
 
-		Span<StyleCode> Codes = stackalloc StyleCode[8];
+		Span<Style> Codes = stackalloc Style[8];
 
 		StyleHelper.UnpackStyle(SetMask, ref Codes, out int Count);
 
@@ -338,7 +338,7 @@ public unsafe partial class Renderer
 	{
 		string temp = string.Empty;
 
-		Span<StyleCode> Codes = stackalloc StyleCode[8];
+		Span<Style> Codes = stackalloc Style[8];
 
 		StyleHelper.UnpackStyle(SetMask, ref Codes, out int Count);
 
@@ -355,7 +355,7 @@ public unsafe partial class Renderer
 	{
 		string temp = string.Empty;
 
-		Span<StyleCode> Codes = stackalloc StyleCode[8];
+		Span<Style> Codes = stackalloc Style[8];
 
 		StyleHelper.UnpackStyle(ResetMask, ref Codes, out int Count);
 
@@ -388,7 +388,7 @@ struct SleepState
 public static class StyleHelper
 {	
 	// Packs an array of stylecode enums into a single byte
-	public static byte PackStyle(params StyleCode[] StyleCodes)
+	public static byte PackStyle(params Style[] StyleCodes)
 	{
 		byte Temp = 0;
 
@@ -407,7 +407,7 @@ public static class StyleHelper
 	/// <param name="PackedStyle">Packed style byte</param>
 	/// <param name="Dest">Unpacked style codes</param>
 	/// <param name="Length">Count of style codes that were written to the span</param>
-	public static void UnpackStyle(byte PackedStyle, ref Span<StyleCode> Dest, out int Length)
+	public static void UnpackStyle(byte PackedStyle, ref Span<Style> Dest, out int Length)
 	{
 		if (Dest.Length < 8)
 		{
@@ -420,7 +420,7 @@ public static class StyleHelper
 		for (int i = 1; i != 128; i *= 2)
 			if ((PackedStyle & i) >= 1)
 			{
-				Dest[Index] = (StyleCode) i;
+				Dest[Index] = (Style) i;
 				Index++;
 			}
 		

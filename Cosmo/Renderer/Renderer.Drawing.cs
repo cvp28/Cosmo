@@ -1,6 +1,4 @@
 ﻿
-using Collections.Pooled;
-
 namespace Cosmo;
 
 public partial class Renderer
@@ -8,17 +6,48 @@ public partial class Renderer
 	public Color24 DefaultForeground { get; set; } = Color24.White;
 	public Color24 DefaultBackground { get; set; } = Color24.Black;
 	
-	public void WriteAt(int X, int Y, string Text) => WriteAt(X, Y, Text, DefaultForeground, DefaultBackground, StyleCode.None);
+	// Experimental "Run-based" writing API
+	public void WriteAt(int X, int Y, params Run[] Runs)
+	{
+		int CurrentX = X;
+
+		Run State = new()
+		{
+			Foreground = DefaultForeground,
+			Background = DefaultBackground,
+			Style = Style.None
+		};
+		
+		foreach (var Run in Runs)
+		{
+			if (Run.Foreground is not null)
+				State.Foreground = Run.Foreground;
+
+			if (Run.Background is not null)
+				State.Background = Run.Background;
+
+			if (Run.Style is not null)
+				State.Style = Run.Style;
+			
+			if (Run.Text is not null)
+			{
+				WriteAt(CurrentX, Y, Run.Text, State.Foreground.Value, State.Background.Value, State.Style.Value);
+				CurrentX += Run.Text.Length;
+			}
+		}
+	}
+
+	public void WriteAt(int X, int Y, string Text) => WriteAt(X, Y, Text, DefaultForeground, DefaultBackground, Style.None);
 	
-	public void WriteAt(int X, int Y, char Character) => WriteAt(X, Y, Character, DefaultForeground, DefaultBackground, StyleCode.None);
+	public void WriteAt(int X, int Y, char Character) => WriteAt(X, Y, Character, DefaultForeground, DefaultBackground, Style.None);
 	
-	public void WriteAt(int X, int Y, string Text, Color24 Foreground, Color24 Background, StyleCode Style)
+	public void WriteAt(int X, int Y, string Text, Color24 Foreground, Color24 Background, Style Style)
 	{
 		for (int i = 0; i < Text.Length; i++)
 			WriteAt(X + i, Y, Text[i], Foreground, Background, Style);
 	}
 	
-	public void WriteAt(int X, int Y, char Character, Color24 Foreground, Color24 Background, StyleCode Style)
+	public void WriteAt(int X, int Y, char Character, Color24 Foreground, Color24 Background, Style Style)
 	{
 		int Index = ScreenIX(X, Y);
 		TryModifyPixel(Index, Character, Foreground, Background, (byte) Style);
@@ -132,4 +161,42 @@ public partial class Renderer
 		
 		return;
 	}
+}
+
+public struct Run
+{
+	// Null properties basically mean "fallback to previous state"
+	public string Text			= null;
+	public Color24? Foreground	= null;
+	public Color24? Background	= null;
+	public Style? Style			= null;
+
+	public Run() { }
+
+	public static bool AssumeImplicitForeground
+	{
+		get => field;
+
+		set
+		{
+			field = value;
+			ImplicitColorHandler = value ? Fg : Bg;
+		}
+	} = true;
+
+	private static Func<Color24, Run> ImplicitColorHandler = Fg;
+
+	public static Run Txt(string Text)				=> new() { Text = Text };
+
+	public static Run Fg(byte R, byte G, byte B)	=> new() { Foreground = new(R, G, B) };
+	public static Run Fg(Color24 Color)				=> new() { Foreground = Color };
+
+	public static Run Bg(byte R, byte G, byte B)	=> new() { Background = new(R, G, B) };
+	public static Run Bg(Color24 Color)				=> new() { Background = Color };
+
+	public static Run St(Style Style)				=> new() { Style = Style };
+
+	public static implicit operator Run(string Text)	=> Txt(Text);
+	public static implicit operator Run(Color24 Color)	=> ImplicitColorHandler(Color);
+	public static implicit operator Run(Style Style)	=> St(Style);
 }
