@@ -7,19 +7,20 @@ namespace Cosmo;
 
 public readonly struct Color24
 {
-	public byte R { get; init; }
+	public byte R => (byte) (_hash >> 16);
 
-    public byte G { get; init; }
+	public byte G => (byte) (_hash >> 8);
 
-    public byte B { get; init; }
+	public byte B => (byte) _hash;
+
+	// Stores RGB into a single 32-bit number
+	// Red -> Green -> Blue
+	private readonly int _hash;
 
 	[JsonConstructor]
 	public Color24(byte Red, byte Green, byte Blue)
 	{
-		R = Red;
-		G = Green;
-		B = Blue;
-        _hash = HashCode.Combine(R, G, B);
+        _hash = Red << 16 | Green << 8 | Blue;
 	}
 	
 	public void AsForegroundVT(ref Utf8StringWriter<ArrayBufferWriter<byte>> sb)
@@ -38,8 +39,6 @@ public readonly struct Color24
 	//public static bool Equals(Color24 x, Color24 y) => x.Red == y.Red && x.Green == y.Green && x.Blue == y.Blue;
 	
 	public override bool Equals(object obj) => GetHashCode() == obj.GetHashCode();
-
-	private readonly int _hash;
 
 	public override int GetHashCode() => _hash;
 

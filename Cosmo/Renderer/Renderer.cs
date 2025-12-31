@@ -241,7 +241,20 @@ public unsafe partial class Renderer
 		foreach (var p in FrontBuffer.ToSkip) BackBuffer.ToClear[p.Index] = p;
 		foreach (var p in FrontBuffer.ToDraw) BackBuffer.ToClear[p.Key] = p.Value;
 	}
-	
+
+	public void Refresh()
+	{
+		BackBuffer.ToClear.Clear();
+		BackBuffer.ToDraw.Clear();
+		BackBuffer.ToSkip.Clear();
+
+		FrontBuffer.ToClear.Clear();
+		FrontBuffer.ToDraw.Clear();
+		FrontBuffer.ToSkip.Clear();
+
+		InitScreen();
+	}
+
 	public string[,] StyleTransitionSequences = new string[256,256];
 
 	private void PrecacheSequences()
